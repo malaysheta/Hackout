@@ -16,6 +16,38 @@ const {
 const router = express.Router();
 
 /**
+ * @route   GET /api/blockchain/status
+ * @desc    Get blockchain connection status
+ * @access  Public
+ */
+router.get('/status', async (req, res) => {
+  try {
+    const { getBlockchainContract, getNetworkInfo } = require('../utils/blockchain');
+    
+    // Test blockchain connection
+    const contract = await getBlockchainContract();
+    const networkInfo = await getNetworkInfo();
+    
+    res.json({
+      status: 'connected',
+      contract: {
+        address: await contract.getAddress(),
+        isConnected: true
+      },
+      network: networkInfo,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Blockchain status error:', error);
+    res.status(500).json({
+      status: 'disconnected',
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+/**
  * @route   GET /api/blockchain/network
  * @desc    Get blockchain network information
  * @access  Private

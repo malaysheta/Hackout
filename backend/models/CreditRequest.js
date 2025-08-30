@@ -18,7 +18,7 @@ const creditRequestSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['PENDING', 'APPROVED', 'REJECTED'],
+    enum: ['PENDING', 'APPROVED', 'REJECTED', 'BLOCKCHAIN_PENDING'],
     default: 'PENDING',
     index: true
   },
@@ -93,6 +93,21 @@ const creditRequestSchema = new mongoose.Schema({
   metadataHash: {
     type: String,
     required: true
+  },
+  blockchainData: {
+    transactionHash: String,
+    blockNumber: Number,
+    gasUsed: Number,
+    creditId: Number,
+    isOnBlockchain: {
+      type: Boolean,
+      default: false
+    },
+    blockchainStatus: {
+      type: String,
+      enum: ['PENDING', 'CONFIRMED', 'FAILED'],
+      default: 'PENDING'
+    }
   },
   reviewDetails: {
     reviewedBy: {
