@@ -35,6 +35,12 @@ const Sidebar = () => {
       roles: ['PRODUCER']
     },
     {
+      name: 'Certifier Portal',
+      href: '/certifier',
+      icon: CheckCircleIcon,
+      roles: ['CERTIFIER']
+    },
+    {
       name: 'Consumer Portal',
       href: '/consumer',
       icon: CreditCardIcon,

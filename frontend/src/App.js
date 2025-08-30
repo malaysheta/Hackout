@@ -10,6 +10,7 @@ import Dashboard from './pages/Dashboard';
 import ProducerPortal from './pages/ProducerPortal';
 import ConsumerPortal from './pages/ConsumerPortal';
 import AuditorPortal from './pages/AuditorPortal';
+import CertifierPortal from './pages/CertifierPortal';
 import Credits from './pages/Credits';
 import Profile from './pages/Profile';
 import './index.css';
@@ -115,6 +116,14 @@ function App() {
               <ProtectedRoute allowedRoles={['PRODUCER']}>
                 <MainLayout>
                   <ProducerPortal />
+                </MainLayout>
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/certifier" element={
+              <ProtectedRoute allowedRoles={['CERTIFIER']}>
+                <MainLayout>
+                  <CertifierPortal />
                 </MainLayout>
               </ProtectedRoute>
             } />

@@ -39,6 +39,16 @@ contract HydrogenCredit is ERC1155, AccessControl {
     mapping(address => uint256[]) public consumerCredits;
     
     // Events
+    event CreditRequested(
+        uint256 indexed requestId,
+        address indexed producer,
+        address indexed certifier,
+        string batchId,
+        uint256 hydrogenAmount,
+        string metadataHash,
+        uint256 timestamp
+    );
+
     event CreditIssued(
         uint256 indexed creditId,
         address indexed producer,
@@ -60,6 +70,14 @@ contract HydrogenCredit is ERC1155, AccessControl {
         uint256 indexed creditId,
         address indexed retiredBy,
         uint256 amount,
+        uint256 timestamp
+    );
+
+    event CreditRejected(
+        uint256 indexed requestId,
+        address indexed producer,
+        address indexed certifier,
+        string reason,
         uint256 timestamp
     );
 

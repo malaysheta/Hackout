@@ -48,7 +48,6 @@ const auth = async (req, res, next) => {
     // Add user info to request
     req.user = {
       userId: decoded.userId,
-      walletAddress: decoded.walletAddress,
       role: decoded.role
     };
 

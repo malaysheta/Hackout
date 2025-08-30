@@ -88,11 +88,10 @@ router.post('/register', validateRequest(registerSchema), async (req, res) => {
     await user.save();
     console.log('User created successfully:', { userId: user._id, username: user.username });
 
-    // Generate JWT token
+    // Generate JWT token with minimal payload
     const token = jwt.sign(
       { 
-        userId: user._id,
-        walletAddress: user.walletAddress,
+        userId: user._id.toString(),
         role: user.role
       },
       process.env.JWT_SECRET,
@@ -169,11 +168,10 @@ router.post('/login', validateRequest(loginSchema), async (req, res) => {
     user.lastLogin = new Date();
     await user.save();
 
-    // Generate JWT token
+    // Generate JWT token with minimal payload
     const token = jwt.sign(
       { 
-        userId: user._id,
-        walletAddress: user.walletAddress,
+        userId: user._id.toString(),
         role: user.role
       },
       process.env.JWT_SECRET,
@@ -197,6 +195,18 @@ router.post('/login', validateRequest(loginSchema), async (req, res) => {
       }
     });
   }
+});
+
+/**
+ * @route   GET /api/auth/test
+ * @desc    Test endpoint for debugging
+ * @access  Public
+ */
+router.get('/test', (req, res) => {
+  res.json({
+    message: 'Auth route is working!',
+    timestamp: new Date().toISOString()
+  });
 });
 
 /**

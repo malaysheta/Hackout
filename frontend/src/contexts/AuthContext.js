@@ -20,8 +20,16 @@ export const AuthProvider = ({ children }) => {
   // Set up axios defaults
   useEffect(() => {
     if (token) {
+      // Check token size
+      const tokenSize = token.length;
+      console.log('Token size:', tokenSize, 'characters');
+      
+      if (tokenSize > 1000) {
+        console.warn('Token is very large, this might cause header size issues');
+      }
+      
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      console.log('Token set in axios headers:', token.substring(0, 20) + '...');
+      console.log('Token set in axios headers:', token.substring(0, 15) + '...');
     } else {
       delete axios.defaults.headers.common['Authorization'];
       console.log('Token removed from axios headers');
@@ -53,6 +61,11 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       console.log('Attempting login with:', { email });
+      
+      // Clear any existing token
+      localStorage.removeItem('token');
+      delete axios.defaults.headers.common['Authorization'];
+      
       const response = await axios.post('/api/auth/login', {
         email,
         password
@@ -60,6 +73,11 @@ export const AuthProvider = ({ children }) => {
 
       console.log('Login response:', response.data);
       const { token: newToken, user: userData } = response.data;
+      
+      // Validate token
+      if (!newToken || typeof newToken !== 'string') {
+        throw new Error('Invalid token received from server');
+      }
       
       setToken(newToken);
       setUser(userData);
@@ -69,7 +87,18 @@ export const AuthProvider = ({ children }) => {
       return { success: true };
     } catch (error) {
       console.error('Login error details:', error);
-      const message = error.response?.data?.error?.message || 'Login failed';
+      
+      let message = 'Login failed';
+      if (error.response) {
+        if (error.response.status === 431) {
+          message = 'Login failed: Request header too large. Please try again.';
+        } else if (error.response.data?.error?.message) {
+          message = error.response.data.error.message;
+        }
+      } else if (error.message) {
+        message = error.message;
+      }
+      
       toast.error(message);
       return { success: false, error: message };
     }
@@ -84,10 +113,19 @@ export const AuthProvider = ({ children }) => {
         role: userData.role 
       });
       
+      // Clear any existing token
+      localStorage.removeItem('token');
+      delete axios.defaults.headers.common['Authorization'];
+      
       const response = await axios.post('/api/auth/register', userData);
       
       console.log('Registration response:', response.data);
       const { token: newToken, user: newUser } = response.data;
+      
+      // Validate token
+      if (!newToken || typeof newToken !== 'string') {
+        throw new Error('Invalid token received from server');
+      }
       
       setToken(newToken);
       setUser(newUser);
@@ -97,7 +135,18 @@ export const AuthProvider = ({ children }) => {
       return { success: true };
     } catch (error) {
       console.error('Registration error details:', error);
-      const message = error.response?.data?.error?.message || 'Registration failed';
+      
+      let message = 'Registration failed';
+      if (error.response) {
+        if (error.response.status === 431) {
+          message = 'Registration failed: Request header too large. Please try again.';
+        } else if (error.response.data?.error?.message) {
+          message = error.response.data.error.message;
+        }
+      } else if (error.message) {
+        message = error.message;
+      }
+      
       toast.error(message);
       return { success: false, error: message };
     }
